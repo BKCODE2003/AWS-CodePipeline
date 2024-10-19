@@ -4,12 +4,14 @@ import logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+s3_client = boto3.client('s3')
+
 def lambda_handler(event, context):
     try:
         logger.info(f"Received event: {event}")
 
+        # Check if 'Records' exists in the event
         if 'Records' in event:
-            # Get the bucket name and object key
             bucket = event['Records'][0]['s3']['bucket']['name']
             key = event['Records'][0]['s3']['object']['key']
 
@@ -17,7 +19,6 @@ def lambda_handler(event, context):
             if key.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp')):
                 logger.info(f"New image uploaded: {key} in bucket {bucket}")
                 # Add your image processing logic here
-                
                 return {
                     'statusCode': 200,
                     'body': 'Image processed successfully'
@@ -32,7 +33,7 @@ def lambda_handler(event, context):
             logger.warning("No 'Records' found in the event.")
             return {
                 'statusCode': 400,
-                'body': "No valid S3 records found."
+                'body': "No valid S3 records found in the event."
             }
 
     except KeyError as e:
