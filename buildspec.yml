@@ -1,12 +1,12 @@
 version: 0.2
+
 phases:
   install:
-    runtime-versions:
-      python: 3.12
+    commands:
+      - pip install awscli  # Ensure AWS CLI is available
   build:
     commands:
-      - zip -j function.zip lambda_function.py
-artifacts:
-  type: zip
-  files:
-    - function.zip
+      - echo "Packaging Lambda function..."
+      - zip -r lambda_function.zip .
+      - echo "Updating Lambda function in AWS..."
+      - aws lambda update-function-code --function-name <your-lambda-function-name> --zip-file fileb://lambda_function.zip
